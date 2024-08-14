@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Query Generator</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-5">SQL Query Generator</h1>
+        <form id="query-form" class="mt-4">
+            <div class="form-group">
+                <label for="question">Ask a question about the database:</label>
+                <input type="text" class="form-control" id="question" placeholder="Enter your question" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        <div id="result" class="mt-4"></div>
+    </div>
+
+    <script>
+        document.getElementById('query-form').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const question = document.getElementById('question').value;
+            const response = await fetch('/query', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ question })
+            });
+            const result = await response.json();
+            console.log(result);
+
+            // Display the SQL query
+            let html = `<h3>SQL Query:</h3><pre>${result.query}</pre>`;
+
+            // Display the database results in a table
+            if (result.databaseResult && result.databaseResult.length > 0) {
+                html += `<h3>Results:</h3><table class="table table-bordered">
+                            <thead><tr>`;
+                // Create table headers
+                Object.keys(result.databaseResult[0]).forEach(key => {
+                    html += `<th>${key}</th>`;
+                });
+                html += `</tr></thead><tbody>`;
+                // Create table rows
+                result.databaseResult.forEach(row => {
+                    html += `<tr>`;
+                    Object.values(row).forEach(value => {
+                        html += `<td>${value}</td>`;
+                    });
+                    html += `</tr>`;
+                });
+                html += `</tbody></table>`;
+            } else {
+                html += `<p>No results found.</p>`;
+            }
+
+            document.getElementById('result').innerHTML = html;
+        });
+    </script>
+</body>
+</html>

@@ -1,19 +1,18 @@
 require('dotenv').config();
 const { GoogleGenerativeAI } = require('@google/generative-ai');
-const { executeQuery, getDatabaseContext } = require('./database.js');
+const { executeQuery} = require('./database.js');
 const { getContext } = require('./context-helper.js');
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-const getGeneratedSqlQuery = async (question) => {
+const generateSqlQuery = async (question) => {
     try {
 
         const prompt = await getSqlPrompt();
         const result = await model.generateContent([prompt, question]);
         const query = processQuery(result.response.text());
-        console.log("Generated SQL query: ", query);
         const databaseResult = await executeQuery(query);
-        console.log("databaseResult: ", databaseResult);
+        return { query, databaseResult };
     } catch (error) {
         console.error("Error generating SQL query: ", error);
         return null;
@@ -78,4 +77,4 @@ const getSqlPrompt = async () => {
 };
 
 
-module.exports = { getGeneratedSqlQuery };
+module.exports = { generateSqlQuery };
