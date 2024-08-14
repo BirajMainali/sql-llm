@@ -1,7 +1,7 @@
 require('dotenv').config();
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const { executeQuery, getDatabaseContext } = require('./database.js');
-
+const { getContext } = require('./context-helper.js');
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
@@ -10,7 +10,7 @@ const getGeneratedSqlQuery = async (question) => {
 
         const prompt = await getSqlPrompt();
         const result = await model.generateContent([prompt, question]);
-        const query = processQuery( result.response.text());
+        const query = processQuery(result.response.text());
         console.log("Generated SQL query: ", query);
         const databaseResult = await executeQuery(query);
         console.log("databaseResult: ", databaseResult);
@@ -26,7 +26,7 @@ const processQuery = (query) => query
     .trim() /* Remove any leading or trailing whitespace*/;
 
 const getSqlPrompt = async () => {
-    const { schemas, tables, columns, relationships } = await getDatabaseContext();
+    const { schemas, tables, columns, relationships } = await getContext();
 
     let schemaDescription = 'You are working with a PostgreSQL database. Here is the database schema:\n\n';
 
