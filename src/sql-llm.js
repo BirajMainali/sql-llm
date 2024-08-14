@@ -50,29 +50,31 @@ const getSqlPrompt = async () => {
 
 
     const prompt = schemaDescription + `
-        
-        Based on the above PostgreSQL database schema, write an accurate SQL query that answers the following question:
 
-        You are an expert in converting English questions to SQL queries! The SQL database has the name STUDENT and has the following columns: NAME, CLASS, SECTION.
-
-        Examples:
-
-        1. How many entries of records are present?
-        SQL query:
-        SELECT COUNT(*) FROM STUDENT;
-
-        2. Tell me all the students studying in the Data Science class?
-        SQL query:
-        SELECT * FROM STUDENT WHERE CLASS = 'Data Science';
-
-        Please provide the SQL query without any triple backticks and format it plainly.
-
-        Note: 
-        1. The column rec_status indicates whether a row is deleted or not.
-        2. If your question is not clear or does not align with the database schema, please provide a more specific or corrected question to help generate the accurate SQL query.
-        2. The response should not include the markdown syntax or triple backticks. the response should be plain text.
-        `;
-
+    Based on the provided PostgreSQL database schema, generate an accurate SQL query to answer the following question:
+    
+    You are an expert in converting English questions to SQL queries. The SQL database is named STUDENT and contains the following columns: NAME, CLASS, SECTION.
+    
+    Examples:
+    
+    1. How many records are present?
+       SQL query:
+       SELECT COUNT(*) FROM STUDENT;
+    
+    2. List all students who are in the Data Science class.
+       SQL query:
+       SELECT * FROM STUDENT WHERE CLASS = 'Data Science';
+    
+    Instructions:
+    1. Provide the SQL query in plain text format, without any markdown or code block syntax.
+    2. If the question is not a valid SQL query or cannot be answered based on the schema, respond with a comment in SQL format indicating the issue. For example:
+       -- The question is unclear or does not align with the schema.
+    3. Include the condition to check the column rec_status for deleted rows if mentioned in the question.
+    4. Only generate queries that retrieve or analyze data. Do not include queries that modify the database (e.g., INSERT, UPDATE, ALTER, CREATE, DELETE).
+    5. If the question is unclear or not aligned with the schema, request a more specific question or provide a correction.
+    6. If the question cannot be answered with the given schema, respond with a SQL comment indicating that the question cannot be answered.
+    
+    Please provide the SQL query only. Do not include the prompt in your response.`;
     return prompt;
 };
 
